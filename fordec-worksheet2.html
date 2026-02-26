@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FORDEC Worksheet - Atria (Accordion)</title>
+
+<style>
+:root{
+  --atria-blue:#211499;
+  --atria-turquoise:#3FC2C2;
+  --atria-neon:#63F8EF;
+
+  --bg:#E9FCFC;
+  --text:#000C48;
+  --muted:#367484;
+
+  --card:#FFFFFF;
+  --border:#CDFFFC;
+  --shadow:0 10px 26px rgba(33,20,153,0.10);
+
+  --radius:18px;
+  --pad:18px;
+  --max:1100px;
+  --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  padding:18px;
+}
+
+.wrap{ max-width:var(--max); margin:auto; }
+
+header{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+h1{
+  margin:0;
+  font-size:clamp(22px,3.2vw,30px);
+  color:var(--atria-blue);
+}
+
+.sub{
+  margin:6px 0 0;
+  font-size:14px;
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.5;
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+
+button{
+  border-radius:12px;
+  padding:10px 14px;
+  font-weight:700;
+  cursor:pointer;
+  border:2px solid var(--atria-blue);
+  background:#fff;
+  color:var(--atria-blue);
+  transition:all .18s ease;
+}
+
+button:hover{
+  background:rgba(99,248,239,0.35);
+  border-color:var(--atria-neon);
+}
+
+.primary{
+  background:var(--atria-blue);
+  color:#fff;
+}
+
+.primary:hover{
+  background:var(--atria-turquoise);
+  border-color:var(--atria-turquoise);
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* Accordion container */
+.accordion{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Accordion item */
+.accItem{
+  border:1px solid rgba(33,20,153,0.10);
+  border-radius:16px;
+  overflow:hidden;
+  background:#fff;
+}
+
+/* Accordion header button */
+.accBtn{
+  width:100%;
+  text-align:left;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 16px;
+  border:0;
+  background:linear-gradient(90deg, rgba(33,20,153,0.95), rgba(63,194,194,0.92));
+  color:#fff;
+  cursor:pointer;
+}
+
+.accBtn:hover{ filter: brightness(1.02); }
+
+.accLeft{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.badge{
+  width:28px; height:28px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  color:var(--atria-blue);
+  font-weight:900;
+  flex:0 0 auto;
+}
+
+.accTitleWrap{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.accTitle{
+  margin:0;
+  font-size:15.5px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+.accHint{
+  margin:0;
+  font-size:12.5px;
+  line-height:1.35;
+  color:rgba(255,255,255,0.92);
+  max-width:70ch;
+}
+
+.chev{
+  flex:0 0 auto;
+  width:34px; height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:16px;
+  transition: transform .18s ease;
+}
+
+.accItem[aria-expanded="true"] .chev{
+  transform: rotate(180deg);
+}
+
+/* Accordion panel */
+.panel{
+  display:none;
+  padding:16px;
+  background:#fff;
+}
+
+.accItem[aria-expanded="true"] .panel{
+  display:block;
+}
+
+/* Form layout */
+.fieldGrid{
+  display:grid;
+  gap:16px;
+  grid-template-columns:1fr;
+}
+
+@media(min-width:900px){
+  .fieldGrid.two{ grid-template-columns:1fr 1fr; }
+  .fieldGrid.three{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+.fieldGroup{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:700;
+}
+
+.fieldHint{
+  margin:0;
+  font-size:12.5px;
+  color:var(--muted);
+  line-height:1.4;
+}
+
+input, textarea, select{
+  width:100%;
+  border-radius:14px;
+  border:1px solid #d7dbe7;
+  padding:10px 12px;
+  font-size:14px;
+  color:var(--text);
+  background:#fff;
+}
+
+input:focus, textarea:focus, select:focus{
+  outline:none;
+  border-color:var(--atria-turquoise);
+  box-shadow:0 0 0 3px rgba(63,194,194,0.22);
+}
+
+textarea{ min-height:86px; resize:vertical; }
+
+hr.sep{
+  border:0;
+  border-top:1px solid rgba(33,20,153,0.10);
+  margin:14px 0;
+}
+
+.footer{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:14px;
+}
+
+.smallNote{
+  margin:10px 0 0;
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+/* Sticky toolbar on small screens (reduces scrolling up) */
+@media(max-width:640px){
+  .toolbar{
+    position:sticky;
+    top:10px;
+    z-index:10;
+    background:rgba(233,252,252,0.92);
+    padding:8px;
+    border:1px solid rgba(33,20,153,0.10);
+    border-radius:14px;
+    backdrop-filter: blur(6px);
+  }
+}
+
+@media print{
+  body{ background:#fff; padding:0; }
+  .toolbar{ display:none !important; }
+  .accBtn{ color:#000; background:#fff; border-bottom:1px solid #ddd; }
+  .chev{ display:none; }
+  .panel{ display:block !important; }
+  .accItem{ page-break-inside:avoid; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>FORDEC Worksheet (Resource Tool)</h1>
+      <p class="sub">
+        Use this worksheet as a practical reference when applying the FORDEC model in real situations.
+        When finished, you can download or print it for your own reference.
+      </p>
+      <p class="smallNote">
+        Tip: Open one section at a time to keep the page compact.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <button class="primary" type="button" id="btnDownload">Download</button>
+      <button type="button" id="btnPrint">Print</button>
+      <button type="button" id="btnReset">Reset</button>
+    </div>
+  </header>
+
+  <div class="card" style="padding:16px;">
+    <div class="accordion" id="accordion">
+
+      <!-- 0 -->
+      <div class="accItem" aria-expanded="true" data-key="situation">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">0</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Situation Details</div>
+              <p class="accHint">Set the scene: what’s happening, where you are, and why a decision is needed.</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGrid three">
+            <div class="fieldGroup">
+              <label for="role">Role</label>
+              <p class="fieldHint">Your responsibility at the time of the decision.</p>
+              <input id="role" placeholder="e.g., Team Lead, Supervisor, Coordinator, Manager" />
+            </div>
+            <div class="fieldGroup">
+              <label for="context">Context / Environment</label>
+              <p class="fieldHint">Where you are or what situation you are in.</p>
+              <input id="context" placeholder="e.g., Team meeting, Client call, Operations shift, Project deadline" />
+            </div>
+            <div class="fieldGroup">
+              <label for="date">Date</label>
+              <p class="fieldHint">When this occurred.</p>
+              <input id="date" type="date" />
+            </div>
+          </div>
+
+          <hr class="sep" />
+
+          <div class="fieldGroup">
+            <label for="summary">Situation Summary</label>
+            <p class="fieldHint">2–4 lines. Focus on observable facts (what changed, what triggered it).</p>
+            <textarea id="summary" placeholder="What is happening right now? What changed? Why does a decision need to be made?"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- F -->
+      <div class="accItem" aria-expanded="false" data-key="facts">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">F</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Facts</div>
+              <p class="accHint">List only what you know for sure. Keep assumptions out.</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGroup">
+            <label for="facts">Confirmed facts</label>
+            <p class="fieldHint">Example: what was said, what was observed, constraints, numbers, deadlines, available resources.</p>
+            <textarea id="facts" placeholder="Write bullet-style facts. Avoid opinions and guesses."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- O -->
+      <div class="accItem" aria-expanded="false" data-key="options">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">O</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Options</div>
+              <p class="accHint">Write realistic choices you can actually do with your time and resources.</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGroup">
+            <label for="options">Possible options</label>
+            <p class="fieldHint">Include “pause / wait / do nothing” if it is a real option.</p>
+            <textarea id="options" placeholder="Option A… Option B… Option C…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- R -->
+      <div class="accItem" aria-expanded="false" data-key="risks">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">R</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Risks & Benefits</div>
+              <p class="accHint">Compare trade-offs: what could go wrong, and what improves?</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGrid two">
+            <div class="fieldGroup">
+              <label for="risksText">Risks</label>
+              <p class="fieldHint">Safety, quality, time, cost, people impact, customer impact, compliance, reputation.</p>
+              <textarea id="risksText" placeholder="Worst-case outcomes and likely risks."></textarea>
+            </div>
+
+            <div class="fieldGroup">
+              <label for="benefits">Benefits</label>
+              <p class="fieldHint">What gets better: clarity, stability, outcomes, reduced errors, time saved.</p>
+              <textarea id="benefits" placeholder="What improves if you choose this direction?"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D -->
+      <div class="accItem" aria-expanded="false" data-key="decision">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">D</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Decision</div>
+              <p class="accHint">Choose one option. State it clearly and write the main reason.</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGroup">
+            <label for="decision">Decision statement</label>
+            <p class="fieldHint">One sentence: “We will ___ because ___.”</p>
+            <textarea id="decision" placeholder="We will ____ because ____ ."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- E -->
+      <div class="accItem" aria-expanded="false" data-key="execution">
+        <button class="accBtn" type="button" data-acc>
+          <div class="accLeft">
+            <div class="badge">E</div>
+            <div class="accTitleWrap">
+              <div class="accTitle">Execution & Check</div>
+              <p class="accHint">Turn the decision into action steps, then define how you will verify it’s working.</p>
+            </div>
+          </div>
+          <div class="chev">⌄</div>
+        </button>
+
+        <div class="panel">
+          <div class="fieldGrid two">
+            <div class="fieldGroup">
+              <label for="execution">Execution plan</label>
+              <p class="fieldHint">Who does what, in what order. Keep it practical and short.</p>
+              <textarea id="execution" placeholder="Step 1… Step 2… Step 3…"></textarea>
+            </div>
+            <div class="fieldGroup">
+              <label for="check">Check / Follow-up</label>
+              <p class="fieldHint">What will you monitor to confirm success? What is your trigger to stop, adjust, or escalate?</p>
+              <textarea id="check" placeholder="Success indicators, checkpoints, and escalation triggers."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="footer">Atria Learning & Development • FORDEC Structured Decision Model</p>
+</div>
+
+<script>
+(function(){
+  // Accordion toggle
+  const items = Array.from(document.querySelectorAll(".accItem"));
+  const btns = Array.from(document.querySelectorAll("[data-acc]"));
+
+  function setExpanded(item, expanded){
+    item.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".accItem");
+      const isOpen = item.getAttribute("aria-expanded") === "true";
+
+      // close others (keeps scrolling low)
+      items.forEach(i => setExpanded(i, false));
+      // toggle this one
+      setExpanded(item, !isOpen);
+
+      // if opened, scroll into view nicely
+      if(!isOpen){
+        item.scrollIntoView({behavior:"smooth", block:"start"});
+      }
+    });
+  });
+
+  // Download current filled copy (snapshot)
+  function downloadCopy(){
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "FORDEC-Atria-Accordion.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 800);
+  }
+
+  // Reset form
+  function resetForm(){
+    if(confirm("Clear all inputs?")){
+      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+    }
+  }
+
+  document.getElementById("btnDownload").addEventListener("click", downloadCopy);
+  document.getElementById("btnPrint").addEventListener("click", () => window.print());
+  document.getElementById("btnReset").addEventListener("click", resetForm);
+})();
+</script>
+
+</body>
+</html>
