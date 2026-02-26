@@ -299,7 +299,7 @@ hr.sep{
       <h1>FORDEC Worksheet (Resource Tool)</h1>
       <p class="sub">
         Use this worksheet as a practical reference when applying the FORDEC model in real situations.
-        When finished, you can download or print it for your own reference.
+        When finished, you can download a PDF or print it for your own reference.
       </p>
       <p class="smallNote">
         Tip: Open one section at a time to keep the page compact.
@@ -307,7 +307,7 @@ hr.sep{
     </div>
 
     <div class="toolbar">
-      <button class="primary" type="button" id="btnDownload">Download</button>
+      <button class="primary" type="button" id="btnDownload">Download PDF</button>
       <button type="button" id="btnPrint">Print</button>
       <button type="button" id="btnReset">Reset</button>
     </div>
@@ -516,18 +516,153 @@ hr.sep{
     });
   });
 
-  // Download current filled copy (snapshot)
-  function downloadCopy(){
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "FORDEC-Atria-Accordion.html";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url), 800);
+  // ✅ PDF export (Print to PDF)
+  function exportPDF(){
+    const get = (id) => (document.getElementById(id)?.value || "").trim();
+
+    // basic HTML escaping to avoid broken markup
+    const esc = (s) => String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+    const now = new Date();
+    const stamp = now.toLocaleString();
+
+    const doc = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>FORDEC Worksheet</title>
+<style>
+  :root{
+    --atria-blue:#211499;
+    --atria-turquoise:#3FC2C2;
+    --text:#000C48;
+    --muted:#367484;
+  }
+  body{
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    padding: 40px;
+  }
+  h1{
+    color: var(--atria-blue);
+    border-bottom: 3px solid var(--atria-turquoise);
+    padding-bottom: 10px;
+    margin: 0 0 10px;
+  }
+  .meta{
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+  h2{
+    color: var(--atria-blue);
+    margin: 22px 0 8px;
+    font-size: 16px;
+  }
+  .box{
+    border: 1px solid #d7dbe7;
+    border-left: 6px solid var(--atria-turquoise);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+  }
+  .row{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .label{
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .value{
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-size: 13.5px;
+  }
+  .footer{
+    margin-top: 26px;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+  }
+  @media print{
+    body{ padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>FORDEC Worksheet</h1>
+<div class="meta">Generated: ${esc(stamp)}</div>
+
+<h2>0 – Situation Details</h2>
+<div class="box">
+  <div class="row">
+    <div>
+      <div class="label">Role</div>
+      <div class="value">${esc(get("role"))}</div>
+    </div>
+    <div>
+      <div class="label">Context / Environment</div>
+      <div class="value">${esc(get("context"))}</div>
+    </div>
+    <div>
+      <div class="label">Date</div>
+      <div class="value">${esc(get("date"))}</div>
+    </div>
+  </div>
+  <div style="margin-top:10px;">
+    <div class="label">Situation Summary</div>
+    <div class="value">${esc(get("summary"))}</div>
+  </div>
+</div>
+
+<h2>F – Facts</h2>
+<div class="box"><div class="value">${esc(get("facts"))}</div></div>
+
+<h2>O – Options</h2>
+<div class="box"><div class="value">${esc(get("options"))}</div></div>
+
+<h2>R – Risks</h2>
+<div class="box"><div class="value">${esc(get("risksText"))}</div></div>
+
+<h2>R – Benefits</h2>
+<div class="box"><div class="value">${esc(get("benefits"))}</div></div>
+
+<h2>D – Decision</h2>
+<div class="box"><div class="value">${esc(get("decision"))}</div></div>
+
+<h2>E – Execution</h2>
+<div class="box"><div class="value">${esc(get("execution"))}</div></div>
+
+<h2>C – Check</h2>
+<div class="box"><div class="value">${esc(get("check"))}</div></div>
+
+<div class="footer">Atria Learning &amp; Development • FORDEC Structured Decision Model</div>
+
+<script>
+  window.onload = function(){
+    window.focus();
+    window.print();
+  };
+<\/script>
+
+</body>
+</html>
+`;
+
+    const win = window.open("", "", "width=980,height=720");
+    win.document.open();
+    win.document.write(doc);
+    win.document.close();
   }
 
   // Reset form
@@ -537,7 +672,7 @@ hr.sep{
     }
   }
 
-  document.getElementById("btnDownload").addEventListener("click", downloadCopy);
+  document.getElementById("btnDownload").addEventListener("click", exportPDF);
   document.getElementById("btnPrint").addEventListener("click", () => window.print());
   document.getElementById("btnReset").addEventListener("click", resetForm);
 })();
